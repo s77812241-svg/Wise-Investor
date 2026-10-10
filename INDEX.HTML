@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Calculateurs gratuits CELI, REER et hypothèque au Canada. Free Canadian TFSA, RRSP and mortgage calculators.">
+<title>Wise Investor | Finance Canada</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172b4d}
+header{background:#102d50;color:white;padding:25px 16px;text-align:center}
+header h1{margin:0;color:#65dfb2}
+nav{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:15px}
+button{cursor:pointer;border:0;border-radius:8px;padding:12px;background:#087f67;color:white;font-weight:bold}
+main{max-width:850px;margin:auto;padding:12px}
+.card{background:white;padding:20px;margin:16px 0;border-radius:14px;box-shadow:0 3px 14px #0001}
+label{display:block;margin-top:12px;font-weight:bold}
+input{box-sizing:border-box;width:100%;padding:12px;margin-top:6px;border:1px solid #ccd5e0;border-radius:7px;font-size:16px}
+.result{margin-top:14px;background:#e8f8f1;padding:14px;border-radius:8px;overflow-wrap:anywhere}
+footer{text-align:center;padding:25px;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+<h1>Wise Investor</h1>
+<p id="tagline">Tes outils financiers pour le Canada</p>
+<button onclick="lang='fr';renderLang()">Français</button>
+<button onclick="lang='en';renderLang()">English</button>
+</header>
+<nav>
+<a href="#celi">CELI / TFSA</a>
+<a href="#reer">REER / RRSP</a>
+<a href="#mortgage">Hypothèque / Mortgage</a>
+</nav>
+<main>
+<section class="card" id="celi">
+<h2 data-fr="Calculateur CELI" data-en="TFSA Calculator">Calculateur CELI</h2>
+<p data-fr="Estime la croissance de ton épargne libre d'impôt." data-en="Estimate the growth of your tax-free savings.">Estime la croissance de ton épargne libre d'impôt.</p>
+<label data-fr="Montant initial ($)" data-en="Initial amount ($)">Montant initial ($)</label>
+<input id="t0" type="number" value="5000" min="0">
+<label data-fr="Versement mensuel ($)" data-en="Monthly contribution ($)">Versement mensuel ($)</label>
+<input id="t1" type="number" value="200" min="0">
+<label data-fr="Rendement annuel (%)" data-en="Annual return (%)">Rendement annuel (%)</label>
+<input id="t2" type="number" value="5" min="0" max="100" step=".1">
+<label data-fr="Durée (années)" data-en="Duration (years)">Durée (années)</label>
+<input id="t3" type="number" value="20" min="1" max="100">
+<button onclick="tfsa()">Calculer / Calculate</button>
+<div class="result" id="tr">Résultat estimé</div>
+</section>
+<section class="card" id="reer">
+<h2 data-fr="Calculateur REER" data-en="RRSP Calculator">Calculateur REER</h2>
+<p data-fr="Estime la valeur future de tes placements REER." data-en="Estimate the future value of your RRSP investments.">Estime la valeur future de tes placements REER.</p>
+<label data-fr="Montant initial ($)" data-en="Initial amount ($)">Montant initial ($)</label>
+<input id="r0" type="number" value="5000" min="0">
+<label data-fr="Versement mensuel ($)" data-en="Monthly contribution ($)">Versement mensuel ($)</label>
+<input id="r1" type="number" value="200" min="0">
+<label data-fr="Rendement annuel (%)" data-en="Annual return (%)">Rendement annuel (%)</label>
+<input id="r2" type="number" value="5" min="0" max="100" step=".1">
+<label data-fr="Durée (années)" data-en="Duration (years)">Durée (années)</label>
+<input id="r3" type="number" value="20" min="1" max="100">
+<button onclick="rrsp()">Calculer / Calculate</button>
+<div class="result" id="rr">Résultat estimé</div>
+</section>
+<section class="card" id="mortgage">
+<h2 data-fr="Calculateur hypothécaire" data-en="Mortgage Calculator">Calculateur hypothécaire</h2>
+<label data-fr="Prix de la propriété ($)" data-en="Property price ($)">Prix de la propriété ($)</label>
+<input id="p" type="number" value="400000" min="1">
+<label data-fr="Mise de fonds ($)" data-en="Down payment ($)">Mise de fonds ($)</label>
+<input id="d" type="number" value="80000" min="0">
+<label data-fr="Taux annuel (%)" data-en="Annual interest rate (%)">Taux annuel (%)</label>
+<input id="i" type="number" value="4.5" min="0" max="100" step=".1">
+<label data-fr="Amortissement (années)" data-en="Amortization (years)">Amortissement (années)</label>
+<input id="y" type="number" value="25" min="1" max="50">
+<button onclick="mortgage()">Calculer / Calculate</button>
+<div class="result" id="mr">Résultat estimé</div>
+</section>
+<section class="card">
+<h2 data-fr="À propos de Wise Investor" data-en="About Wise Investor">À propos de Wise Investor</h2>
+<p data-fr="Wise Investor propose des outils éducatifs gratuits pour mieux comprendre l'épargne, l'investissement et le financement immobilier au Canada." data-en="Wise Investor provides free educational tools to help Canadians understand saving, investing and home financing.">Wise Investor propose des outils éducatifs gratuits pour mieux comprendre l'épargne, l'investissement et le financement immobilier au Canada.</p>
+<p data-fr="Avertissement : ces résultats sont des estimations et ne constituent pas des conseils financiers ou fiscaux." data-en="Disclaimer: results are estimates and are not financial or tax advice.">Avertissement : ces résultats sont des estimations et ne constituent pas des conseils financiers ou fiscaux.</p>
+</section>
+</main>
+<footer>© 2026 Wise Investor · <a href="privacy.html">Confidentialité / Privacy</a> · <a href="contact.html">Contact</a></footer>
+<script>
+let lang='fr';
+const money=n=>new Intl.NumberFormat(lang==='fr'?'fr-CA':'en-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0}).format(n);
+function val(id){return Math.max(0,Number(document.getElementById(id).value)||0)}
+function future(a,c,rate,years){let m=rate/100/12,n=years*12;return m===0?a+c*n:a*Math.pow(1+m,n)+c*(Math.pow(1+m,n)-1)/m}
+function invest(prefix,out){let a=val(prefix+'0'),c=val(prefix+'1'),r=val(prefix+'2'),y=val(prefix+'3');if(y<1||y>100||r>100)return;let total=future(a,c,r,y);document.getElementById(out).textContent=(lang==='fr'?'Valeur future estimée : ':'Estimated future value: ')+money(total)+' · '+(lang==='fr'?'Cotisations totales : ':'Total contributions: ')+money(a+c*y*12)}
+function tfsa(){invest('t','tr')}
+function rrsp(){invest('r','rr')}
+function mortgage(){let loan=val('p')-val('d'),rate=val('i')/1200,n=val('y')*12;if(val('p')<=0||val('d')>=val('p')||n<12||n>600||val('i')>100){document.getElementById('mr').textContent=lang==='fr'?'Vérifie les montants saisis.':'Check your entered amounts.';return}let payment=rate===0?loan/n:loan*rate/(1-Math.pow(1+rate,-n));document.getElementById('mr').textContent=(lang==='fr'?'Paiement mensuel estimé : ':'Estimated monthly payment: ')+money(payment)+' · '+(lang==='fr'?'Intérêts totaux : ':'Total interest: ')+money(payment*n-loan)}
+function renderLang(){document.documentElement.lang=lang;document.querySelectorAll('[data-fr]').forEach(e=>e.textContent=e.dataset[lang]);document.getElementById('tagline').textContent=lang==='fr'?'Tes outils financiers pour le Canada':'Your Canadian financial tools';}
+['t0','t1','t2','t3'].forEach(id=>document.getElementById(id).addEventListener('input',tfsa));
+['r0','r1','r2','r3'].forEach(id=>document.getElementById(id).addEventListener('input',rrsp));
+['p','d','i','y'].forEach(id=>document.getElementById(id).addEventListener('input',mortgage));
+tfsa();rrsp();mortgage();
+</script>
+</body>
+</html>
