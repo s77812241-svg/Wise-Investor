@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Calculateur d'hypothèque canadien gratuit : paiement, prime SCHL, taux fixe ou variable. / Free Canadian mortgage calculator.">
+<!-- ADSENSE : collez ici le script AdSense (ca-pub-XXXX) fourni par Google -->
+<title>Calculateur d'hypothèque Canada</title>
+<style>
+:root{--ink:#16313a;--muted:#5d727a;--line:#d5dfe0;--bg:#f5f8f7;--card:#fff;--accent:#0a6b6b;--warn:#a85a00}
+@media (prefers-color-scheme:dark){:root{--ink:#e7f0ef;--muted:#9bb0b3;--line:#2c4247;--bg:#0f1f23;--card:#162b30;--accent:#4fc3b8;--warn:#f0b35a}}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+h1{font-size:1.4rem;margin:0}
+.lang button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer;font:inherit}
+.lang button:first-child{border-radius:8px 0 0 8px}.lang button:last-child{border-radius:0 8px 8px 0;border-left:0}
+.lang button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.hint{font-size:.8rem;color:var(--muted);margin-top:2px}
+.result{border-left:6px solid var(--accent)}
+.big{font-size:2.2rem;font-weight:700;color:var(--accent);line-height:1.1}
+dl{display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin:12px 0 0}
+dt{color:var(--muted)}dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.warn{color:var(--warn);font-size:.9rem;margin:8px 0 0}
+.note{font-size:.8rem;color:var(--muted)}
+
+html[lang=fr] .en{display:none}html[lang=en] .fr{display:none}
+.ad{margin:16px 0;min-height:90px;text-align:center}
+section.txt{margin:28px 0}section.txt h2{font-size:1.15rem;margin:0 0 8px}
+section.txt p,section.txt li{max-width:70ch}
+footer{border-top:1px solid var(--line);margin-top:32px;padding-top:16px}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1 data-i="title"></h1>
+  <div class="lang" role="group" aria-label="Langue / Language">
+    <button id="bfr" aria-pressed="true">FR</button><button id="ben" aria-pressed="false">EN</button>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="grid">
+    <div><label for="price" data-i="price"></label><input id="price" type="number" min="0" step="1000" value="500000" inputmode="decimal"></div>
+    <div><label for="down" data-i="down"></label><input id="down" type="number" min="0" step="1000" value="100000" inputmode="decimal"><div class="hint" id="downPct"></div></div>
+    <div><label for="rate" data-i="rate"></label><input id="rate" type="number" min="0" max="25" step="0.01" value="4.5" inputmode="decimal"></div>
+    <div><label for="type" data-i="type"></label>
+      <select id="type"><option value="fixed" data-i="fixed"></option><option value="var" data-i="var"></option></select></div>
+    <div><label for="amort" data-i="amort"></label>
+      <select id="amort"><option>15</option><option>20</option><option selected>25</option><option>30</option></select></div>
+    <div><label for="term" data-i="term"></label>
+      <select id="term"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>7</option><option>10</option></select></div>
+    <div style="grid-column:1/-1"><label for="freq" data-i="freq"></label>
+      <select id="freq">
+        <option value="m" data-i="f_m"></option><option value="s" data-i="f_s"></option>
+        <option value="b" data-i="f_b"></option><option value="ba" data-i="f_ba"></option>
+        <option value="w" data-i="f_w"></option><option value="wa" data-i="f_wa"></option>
+      </select></div>
+  </div>
+</section>
+
+<section class="panel result" aria-live="polite">
+  <div class="note" id="payLabel"></div>
+  <div class="big" id="pay">—</div>
+  <p class="warn" id="warn" hidden></p>
+  <dl>
+    <dt data-i="r_loan"></dt><dd id="loan"></dd>
+    <dt data-i="r_cmhc"></dt><dd id="cmhc"></dd>
+    <dt data-i="r_bal"></dt><dd id="bal"></dd>
+    <dt data-i="r_int"></dt><dd id="int"></dd>
+    <dt data-i="r_stress"></dt><dd id="stress"></dd>
+  </dl>
+</section>
+
+<p class="note" data-i="disc"></p>
+
+<div class="ad"><!-- ADSENSE : bloc d'annonce n° 1 (optionnel si annonces automatiques) --></div>
+
+<section class="txt" id="guide">
+<div class="fr">
+<h2>Comment fonctionne le calcul d'une hypothèque au Canada</h2>
+<p>Au Canada, les taux fixes se composent semestriellement, alors qu'aux États-Unis ils se composent chaque mois. À taux nominal égal, le paiement canadien est donc légèrement plus bas. Ce calculateur applique cette règle, et utilise le calcul mensuel pour les taux variables.</p>
+<h2>Mise de fonds et assurance SCHL</h2>
+<p>Si votre mise de fonds est inférieure à 20 % du prix, votre prêt doit être assuré. La prime, un pourcentage du prêt, est ajoutée au montant emprunté. La mise de fonds minimale est de 5 % sur les premiers 500 000 $ du prix et de 10 % sur la tranche de 500 000 $ à 1,5 M$. À partir de 1,5 M$, il faut 20 %.</p>
+<h2>Paiements accélérés</h2>
+<p>Un paiement accéléré aux 2 semaines ou chaque semaine équivaut à verser l'équivalent d'un paiement mensuel de plus par année. Vous remboursez le capital plus vite et payez moins d'intérêts.</p>
+<h2>Test de résistance</h2>
+<p>Les prêteurs vérifient que vous pouvez payer à un taux de qualification, soit votre taux plus 2 %, ou 5,25 % si ce taux est plus élevé. Le calculateur affiche ce paiement à titre indicatif.</p>
+</div>
+<div class="en">
+<h2>How Canadian mortgage payments are calculated</h2>
+<p>In Canada, fixed rates compound semi-annually, while in the US they compound monthly. For the same nominal rate, the Canadian payment is slightly lower. This calculator applies that rule, and uses monthly compounding for variable rates.</p>
+<h2>Down payment and CMHC insurance</h2>
+<p>If your down payment is under 20% of the price, your mortgage must be insured. The premium, a percentage of the loan, is added to the amount borrowed. The minimum down payment is 5% on the first $500,000 of the price and 10% on the portion from $500,000 to $1.5M. At $1.5M and above, you need 20%.</p>
+<h2>Accelerated payments</h2>
+<p>An accelerated bi-weekly or weekly payment adds up to one extra monthly payment per year. You pay down principal faster and pay less interest.</p>
+<h2>Stress test</h2>
+<p>Lenders check that you could afford payments at a qualifying rate: your rate plus 2%, or 5.25% if that is higher. The calculator shows this payment for reference.</p>
+</div>
+</section>
+
+<div class="ad"><!-- ADSENSE : bloc d'annonce n° 2 --></div>
+
+<footer>
+<section class="txt" id="about">
+<div class="fr"><h2>À propos</h2><p>Cet outil gratuit aide les futurs propriétaires canadiens à estimer leurs paiements hypothécaires. Il fournit des estimations seulement et ne remplace pas les conseils d'un prêteur, d'un courtier hypothécaire ou d'un conseiller financier.</p></div>
+<div class="en"><h2>About</h2><p>This free tool helps Canadian homebuyers estimate their mortgage payments. It provides estimates only and does not replace advice from a lender, mortgage broker or financial advisor.</p></div>
+</section>
+
+<section class="txt" id="privacy">
+<div class="fr"><h2>Politique de confidentialité</h2>
+<p>Les montants saisis dans le calculateur restent dans votre navigateur et ne sont ni envoyés ni conservés sur nos serveurs. Seul votre choix de langue est enregistré localement dans votre navigateur.</p>
+<p>Ce site utilise Google AdSense pour afficher des annonces. Google et ses partenaires peuvent utiliser des témoins (cookies) pour diffuser des annonces selon vos visites sur ce site et d'autres sites. Vous pouvez gérer la personnalisation des annonces dans les paramètres d'annonces de Google et refuser les témoins dans votre navigateur.</p></div>
+<div class="en"><h2>Privacy policy</h2>
+<p>Amounts entered in the calculator stay in your browser and are neither sent to nor stored on our servers. Only your language choice is saved locally in your browser.</p>
+<p>This site uses Google AdSense to display ads. Google and its partners may use cookies to serve ads based on your visits to this site and other sites. You can manage ad personalization in Google's ad settings and decline cookies in your browser.</p></div>
+</section>
+</footer>
+</div>
+
+<script>
+const T={
+fr:{title:"Calculateur d'hypothèque",price:"Prix de la propriété ($)",down:"Mise de fonds ($)",rate:"Taux d'intérêt annuel (%)",type:"Type de taux",fixed:"Fixe (composé semestriellement)",var:"Variable (composé mensuellement)",amort:"Amortissement (ans)",term:"Terme (ans)",freq:"Fréquence des paiements",
+f_m:"Mensuel",f_s:"Bimensuel (2 fois par mois)",f_b:"Aux 2 semaines",f_ba:"Aux 2 semaines accéléré",f_w:"Hebdomadaire",f_wa:"Hebdomadaire accéléré",
+r_loan:"Montant du prêt",r_cmhc:"Prime d'assurance SCHL (incluse)",r_bal:"Solde à la fin du terme",r_int:"Intérêts totaux (amortissement complet)",r_stress:"Paiement mensuel au taux de qualification",
+payOf:"Paiement ",of:" : ",pct:"Mise de fonds : ",
+w_min:"La mise de fonds est sous le minimum requis (5 % sur les premiers 500 000 $, 10 % sur la tranche de 500 000 $ à 1,5 M$).",w_big:"Pour un prix de 1,5 M$ ou plus, la mise de fonds minimale est de 20 %.",w_amort:"Amortissement de plus de 25 ans : généralement réservé aux premiers acheteurs ou aux constructions neuves (assurés).",w_inv:"Vérifiez les montants saisis.",
+disc:"Estimation à titre indicatif seulement. Les primes SCHL, règles d'admissibilité et taux de qualification (taux + 2 % ou 5,25 %, le plus élevé) peuvent changer. Consultez votre prêteur ou un courtier hypothécaire."},
+en:{title:"Mortgage Calculator",price:"Property price ($)",down:"Down payment ($)",rate:"Annual interest rate (%)",type:"Rate type",fixed:"Fixed (compounded semi-annually)",var:"Variable (compounded monthly)",amort:"Amortization (years)",term:"Term (years)",freq:"Payment frequency",
+f_m:"Monthly",f_s:"Semi-monthly (twice a month)",f_b:"Bi-weekly",f_ba:"Accelerated bi-weekly",f_w:"Weekly",f_wa:"Accelerated weekly",
+r_loan:"Mortgage amount",r_cmhc:"CMHC insurance premium (included)",r_bal:"Balance at end of term",r_int:"Total interest (full amortization)",r_stress:"Monthly payment at qualifying rate",
+payOf:"Payment ",of:": ",pct:"Down payment: ",
+w_min:"Down payment is below the minimum (5% on the first $500,000, 10% on the portion from $500,000 to $1.5M).",w_big:"For a price of $1.5M or more, the minimum down payment is 20%.",w_amort:"Amortization over 25 years is generally limited to first-time buyers or new builds (insured mortgages).",w_inv:"Please check the amounts entered.",
+disc:"Estimate for information only. CMHC premiums, eligibility rules and the qualifying rate (rate + 2% or 5.25%, whichever is higher) may change. Speak with your lender or a mortgage broker."}
+};
+let L="fr";
+const $=id=>document.getElementById(id);
+const FREQ={m:[12,1],s:[24,1],b:[26,1],ba:[26,2],w:[52,1],wa:[52,4]};
+
+function setLang(l){
+  L=l;document.documentElement.lang=l;
+  document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T[l][e.dataset.i]);
+  $("bfr").setAttribute("aria-pressed",l==="fr");$("ben").setAttribute("aria-pressed",l==="en");
+  try{localStorage.setItem("mc_lang",l)}catch(e){}
+  calc();
+}
+const money=v=>new Intl.NumberFormat(L==="fr"?"fr-CA":"en-CA",{style:"currency",currency:"CAD",maximumFractionDigits:2}).format(v);
+
+function pmt(loan,r,comp,nPerYear,years){
+  const i=Math.pow(1+r/comp,comp/nPerYear)-1;
+  if(i===0)return loan/(nPerYear*years);
+  return loan*i/(1-Math.pow(1+i,-nPerYear*years));
+}
+
+function calc(){
+  const price=+$("price").value,down=+$("down").value,rate=+$("rate").value/100;
+  const amort=+$("amort").value,term=+$("term").value,comp=$("type").value==="fixed"?2:12;
+  const [n,div]=FREQ[$("freq").value];
+  const warns=[];
+  if(!(price>0)||down<0||down>=price||rate<0){$("pay").textContent="—";$("warn").hidden=false;$("warn").textContent=T[L].w_inv;return}
+  const pct=down/price;
+  $("downPct").textContent=T[L].pct+(pct*100).toFixed(1).replace(".",L==="fr"?",":".")+" %";
+  const min=price>=1.5e6?price*0.2:price<=5e5?price*0.05:25000+(price-5e5)*0.10;
+  if(down<min)warns.push(price>=1.5e6?T[L].w_big:T[L].w_min);
+  if(amort>25)warns.push(T[L].w_amort);
+
+  let prem=0;
+  if(pct<0.2){const ltv=1-pct;prem=ltv<=0.85?0.028:ltv<=0.90?0.031:0.04;if(amort>25)prem+=0.002}
+  const base=price-down,premium=base*prem,loan=base+premium;
+
+  let pay;
+  const monthly=pmt(loan,rate,comp,12,amort);
+  pay=div===1?pmt(loan,rate,comp,n,amort):monthly/div;
+  const i=Math.pow(1+rate/comp,comp/n)-1;
+
+  let bal=loan,totalInt=0,k=0,balTerm=null;
+  while(bal>0.005&&k<n*60){
+    const intr=bal*i;totalInt+=intr;bal=bal+intr-pay;k++;
+    if(k===Math.round(n*term))balTerm=Math.max(bal,0);
+  }
+  if(balTerm===null)balTerm=0;
+
+  const q=Math.max(rate+0.02,0.0525);
+  $("payLabel").textContent=T[L].payOf+"("+$("freq").selectedOptions[0].textContent.toLowerCase()+")";
+  $("pay").textContent=money(pay);
+  $("loan").textContent=money(loan);
+  $("cmhc").textContent=money(premium);
+  $("bal").textContent=money(balTerm);
+  $("int").textContent=money(totalInt);
+  $("stress").textContent=money(pmt(loan,q,2,12,amort));
+  $("warn").hidden=!warns.length;$("warn").textContent=warns.join(" ");
+}
+
+document.querySelectorAll("input,select").forEach(e=>e.addEventListener("input",calc));
+$("bfr").onclick=()=>setLang("fr");$("ben").onclick=()=>setLang("en");
+let start="fr";
+try{start=localStorage.getItem("mc_lang")||((navigator.language||"fr").startsWith("en")?"en":"fr")}catch(e){}
+setLang(start);
+</script>
+</body>
+</html>
